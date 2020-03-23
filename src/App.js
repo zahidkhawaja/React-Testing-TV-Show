@@ -20,6 +20,9 @@ export default function App() {
       setShow(res);
       setSeasons(formatSeasons(res._embedded.episodes));
     })
+    .catch(err => {
+      console.log("Error", err);
+    })
   }, []);
 
   const handleSelect = e => {
@@ -36,7 +39,7 @@ export default function App() {
       <h1>{show.name}</h1>
       {parse(show.summary)}
       <Dropdown
-        options={Object.keys(seasons)}
+        data-testid = "dropdown" options={Object.keys(seasons)}
         onChange={handleSelect}
         value={selectedSeason || "Select a season"}
         placeholder="Select an option"
