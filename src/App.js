@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchShow } from "./api/fetchShow";
 import Dropdown from "react-dropdown";
 import parse from "html-react-parser";
 
@@ -15,17 +15,14 @@ export default function App() {
   const episodes = seasons[selectedSeason] || [];
 
   useEffect(() => {
-    const fetchShow = () => {
-      axios
-        .get(
-          "https://api.tvmaze.com/singlesearch/shows?q=stranger-things&embed=episodes"
-        )
-        .then(res => {
-          setShow(res.data);
-          setSeasons(formatSeasons(res.data._embedded.episodes));
-        });
-    };
-    fetchShow();
+    fetchShow()
+    .then(res => {
+      setShow(res);
+      setSeasons(formatSeasons(res._embedded.episodes));
+    })
+    .catch(err => {
+      console.log("Error", err);
+    })
   }, []);
 
   const handleSelect = e => {
@@ -42,12 +39,13 @@ export default function App() {
       <h1>{show.name}</h1>
       {parse(show.summary)}
       <Dropdown
-        options={Object.keys(seasons)}
+        data-testid = "dropdown" options={Object.keys(seasons)}
         onChange={handleSelect}
         value={selectedSeason || "Select a season"}
         placeholder="Select an option"
       />
       <Episodes episodes={episodes} />
+      {console.log("EPISODES", episodes)}
     </div>
   );
 }
